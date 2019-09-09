@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
         res.status(200).json(response)
     })
     .catch(err => {
-        res.status(500).json(err)
+        res.status(500).json({errorMessage: 'The accounts information could not be retrieved'})
     })
 })
 
@@ -21,7 +21,7 @@ router.get('/:id', (req, res) => {
         .where({ id })
         .first()
         .then(response => {
-            if (response && response > 0) {
+            if (response) {
                 res.status(200).json(response)
             } else {
                 res.status(404)
@@ -29,7 +29,7 @@ router.get('/:id', (req, res) => {
             }
         })
         .catch(err => {
-            res.status(500).json(err)
+            res.status(500).json({errorMessage: 'The account information could not be retrieved'})
         })
 })
 
@@ -41,7 +41,7 @@ router.post('/', validateAccounts,(req, res) => {
             res.status(201).json(response)
         })
         .catch(err => {
-            res.status(500).json(err)
+            res.status(500).json({errorMessage: 'There was an error while saving the account to the database'})
         })
 })
 
@@ -52,10 +52,15 @@ router.put('/:id', (req, res) => {
         .where({ id })
         .update(changes)
         .then(response => {
-            res.status(200).json(response)
+            if (response && response > 0) {
+                res.status(200).json(response)
+            } else {
+                res.status(404)
+                .json({ message: 'The item with the specified ID does not exist.' })
+            }
         })
         .catch(err => {
-            res.status(500).json(err)
+            res.status(500).json({errorMessage: 'There was an error while saving the account to the database'})
         })
 })
 
@@ -66,7 +71,7 @@ router.delete('/:id', (req, res) => {
         .del()
         .then(response => {
             if (response && response > 0) {
-                res.status(200).json({ message: `deleted ${response}`})
+                res.status(200).json({ message: 'The account was deleted'})
             } else {
                 res.status(404)
                 .json({ message: 'The item with the specified ID does not exist.' })
@@ -74,7 +79,7 @@ router.delete('/:id', (req, res) => {
             
         })
         .catch(err => {
-            res.json(err)
+            res.json({errorMessage: 'There was an error while saving the account to the database'})
         })
 });
 
